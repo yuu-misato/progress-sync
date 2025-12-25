@@ -30,6 +30,15 @@ export default function AdminDashboard() {
     const [selectedId, setSelectedId] = useState<string | null>(MOCK_SUBMISSIONS[0].id);
     const [feedback, setFeedback] = useState("");
 
+    // Project Creation State
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newProject, setNewProject] = useState({
+        name: "",
+        client: "",
+        deadline: "",
+        budget: ""
+    });
+
     const selectedSubmission = submissions.find(s => s.id === selectedId);
     const pendingCount = submissions.filter(s => s.status === "pending").length;
 
@@ -50,6 +59,19 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleCreateProject = (e: React.FormEvent) => {
+        e.preventDefault();
+        // Here we would call Server Action to save to DB
+        setIsModalOpen(false);
+        const inviteLinkClient = `https://progress-sync.app/client/${Math.random().toString(36).substr(2, 9)}`;
+        const inviteLinkWorker = `https://progress-sync.app/worker/invite/${Math.random().toString(36).substr(2, 9)}`;
+
+        alert(`プロジェクト「${newProject.name}」を作成しました。\n\n【顧客用招待リンク】\n${inviteLinkClient}\n\n【クリエイター用招待リンク】\n${inviteLinkWorker}\n\n(※リンクはクリップボードにコピーされたつもりで)`);
+
+        // Reset form
+        setNewProject({ name: "", client: "", deadline: "", budget: "" });
+    };
+
     return (
         <div className={styles.page}>
             <header className={styles.header}>
@@ -58,9 +80,82 @@ export default function AdminDashboard() {
                         Manager Cockpit
                         {pendingCount > 0 && <span className={styles.badge}>{pendingCount}件のレビュー待ち</span>}
                     </h1>
-                    <div style={{ fontSize: '0.9rem', color: '#666' }}>ログイン中: 管理者</div>
+
+                    <div className={styles.headerActions}>
+                        <button className={styles.createBtn} onClick={() => setIsModalOpen(true)}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            新規案件作成
+                        </button>
+                    </div>
                 </div>
             </header>
+
+            {/* Create Project Modal */}
+            {isModalOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
+                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2 className={styles.modalTitle}>新規プロジェクト作成</h2>
+                            <button className={styles.closeBtn} onClick={() => setIsModalOpen(false)}>×</button>
+                        </div>
+                        <form onSubmit={handleCreateProject}>
+                            <div className={styles.modalBody}>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>案件名</label>
+                                    <input
+                                        type="text"
+                                        className={styles.inputSelect}
+                                        placeholder="例: 株式会社サンプル コーポレートサイト制作"
+                                        required
+                                        value={newProject.name}
+                                        onChange={e => setNewProject({ ...newProject, name: e.target.value })}
+                                    />
+                                </div>
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label className={styles.formLabel}>クライアント名</label>
+                                        <input
+                                            type="text"
+                                            className={styles.inputSelect}
+                                            placeholder="例: 株式会社サンプル"
+                                            required
+                                            value={newProject.client}
+                                            onChange={e => setNewProject({ ...newProject, client: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label className={styles.formLabel}>予算目安</label>
+                                        <input
+                                            type="text"
+                                            className={styles.inputSelect}
+                                            placeholder="例: 1,500,000"
+                                            value={newProject.budget}
+                                            onChange={e => setNewProject({ ...newProject, budget: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.formLabel}>納期</label>
+                                    <input
+                                        type="date"
+                                        className={styles.inputSelect}
+                                        required
+                                        value={newProject.deadline}
+                                        onChange={e => setNewProject({ ...newProject, deadline: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.modalFooter}>
+                                <button type="button" className={`${styles.btn} ${styles.btnReject}`} onClick={() => setIsModalOpen(false)} style={{ border: 'none' }}>キャンセル</button>
+                                <button type="submit" className={styles.createBtn} style={{ padding: '10px 24px' }}>作成してURL発行</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             <main className={`container ${styles.grid}`}>
                 {/* Sidebar: List of Creators/Submissions */}
