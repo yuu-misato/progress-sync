@@ -24,10 +24,16 @@ export default function WorkerDashboard() {
     const urgent = tasks.filter(t => !t.isDone && t.isUrgent).length;
     const completed = tasks.filter(t => t.isDone).length;
 
-    const handleSubmit = (taskId: string) => {
+    const handleSubmit = (taskId: string, e: React.FormEvent) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const title = formData.get("submitTitle");
+        const comment = formData.get("submitComment");
+
         // Client-side optimistic update for demo
         setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isDone: true } : t));
-        alert("提出完了しました（デモモード）");
+        alert(`提出完了しました（デモモード）\n\nタイトル: ${title}\nコメント: ${comment}`);
     };
 
     return (
@@ -94,14 +100,34 @@ export default function WorkerDashboard() {
                                     </span>
                                 </div>
                             </div>
-                            <div className={styles.actions}>
-                                <button
-                                    className={styles.submitBtn}
-                                    onClick={() => handleSubmit(task.id)}
-                                >
-                                    提出する
-                                </button>
-                            </div>
+
+                            <form className={styles.submissionForm} onSubmit={(e) => handleSubmit(task.id, e)}>
+                                <div className={styles.formGroup}>
+                                    <input
+                                        type="text"
+                                        name="submitTitle"
+                                        placeholder="提出物のタイトル (例: 初稿デザイン)"
+                                        className={styles.input}
+                                        required
+                                    />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <textarea
+                                        name="submitComment"
+                                        placeholder="コメントや共有URLなど"
+                                        className={styles.textarea}
+                                        rows={2}
+                                    />
+                                </div>
+                                <div className={styles.actions}>
+                                    <button
+                                        type="submit"
+                                        className={styles.submitBtn}
+                                    >
+                                        提出する
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     ))}
                 </div>

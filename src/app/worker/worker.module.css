@@ -71,90 +71,60 @@
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    /* Stack info and form */
+    align-items: stretch;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.taskItem:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
 .taskInfo {
-    flex: 1;
+    margin-bottom: 20px;
 }
 
-.projectBadge {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding: 4px 12px;
-    background: var(--surface-alt);
-    color: var(--text-sub);
-    border-radius: 999px;
+.submissionForm {
+    width: 100%;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.formGroup {
     margin-bottom: 12px;
-    font-weight: 600;
 }
 
-.taskName {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+.input,
+.textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--background);
     color: var(--text-main);
+    font-size: 0.9rem;
+    transition: all 0.2s;
 }
 
-.taskMeta {
-    display: flex;
-    gap: 24px;
-    font-size: 0.875rem;
-    color: var(--text-sub);
-    align-items: center;
+.input:focus,
+.textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.deadline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.deadline.urgent {
-    color: var(--danger);
-    /* Red for urgency */
-    font-weight: 700;
+.textarea {
+    resize: vertical;
 }
 
 .actions {
     display: flex;
-    gap: 12px;
-    align-items: center;
+    justify-content: flex-end;
+    margin-top: 12px;
 }
 
-.submitBtn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: var(--radius-full);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
-}
-
-.submitBtn:hover {
-    background: var(--primary-light);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
+/* ... existing media queries ... */
 @media (max-width: 768px) {
-    .taskItem {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
-    }
 
+    /* .taskItem style in media query removed as it's now default column */
     .actions {
         width: 100%;
         justify-content: flex-end;
