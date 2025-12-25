@@ -17,8 +17,13 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  // LINE連携用ID (本来はUserモデルと紐づけますがシンプルに実装)
-  lineUserId  String?
+  // 通知設定
+  lineUserId        String?
+  notificationEmail String?
+  notifyViaLine     Boolean  @default(false)
+  notifyViaEmail    Boolean  @default(true)
+  notifyViaSlack    Boolean  @default(false) // 将来用拡張
+
 
   steps     ProjectStep[]
   logs      ActivityLog[]

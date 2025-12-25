@@ -2,7 +2,7 @@
 'use server';
 
 import { PrismaClient } from '@prisma/client';
-import { sendProgressNotification } from './line-bot';
+import { notifyClient } from './notifier';
 import { revalidatePath } from 'next/cache';
 
 const prisma = new PrismaClient();
@@ -14,6 +14,12 @@ export async function seedDemoData() {
             name: "株式会社サンプル 新規Webサイト制作",
             clientName: "株式会社サンプル 御中",
             status: "active",
+
+            // Default notification settings for demo
+            notificationEmail: "client@example.com",
+            notifyViaLine: true,
+            notifyViaEmail: true,
+
             steps: {
                 create: [
                     { label: "要件定義", order: 1, status: "completed", date: "2025/12/01" },
@@ -63,10 +69,11 @@ export async function updateStepStatus(stepId: string, status: string, projectId
         data: { status }
     });
 
-    // Notify LINE
-    const project = await prisma.project.findUnique({ where: { id: projectId } });
-    if (project && project.lineUserId) {
-        await sendProgressNotification(project.lineUserId, `[進捗更新] プロジェクト「${project.name}」のステータスが更新されました。`);
+    // Notify Client (Auto-dispatch to Email/LINE based on settings)
+    try {
+        await notifyClient(projectId, `ステータスが「${status}」に更新されました。`);
+    } catch (e) {
+        console.error("Failed to notify client", e);
     }
 
     revalidatePath(`/client/${projectId}`);
