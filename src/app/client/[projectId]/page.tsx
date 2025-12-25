@@ -19,7 +19,7 @@ export default async function ClientPage({ params }: { params: { projectId: stri
     // Determine current step (active or last completed)
     // We need to type cast or ensure getProject returns steps with status.
     // The prisma include returns steps.
-    const steps = project.steps || [];
+    const steps = (project as any).steps || [];
     const currentStep = steps.find((s: any) => s.status === 'active') || steps[steps.length - 1];
 
     return (
@@ -30,7 +30,7 @@ export default async function ClientPage({ params }: { params: { projectId: stri
                         <h1 className={styles.projectName}>{project.name}</h1>
                         <p className={styles.clientName}>{project.clientName}</p>
                     </div>
-                    <InvoiceButton project={project} />
+                    <InvoiceButton project={project as any} />
                 </div>
             </header>
 
@@ -45,7 +45,7 @@ export default async function ClientPage({ params }: { params: { projectId: stri
                         </div>
 
                         <div className={styles.tracker}>
-                            {project.steps.map((step: any, index: number) => (
+                            {(project as any).steps.map((step: any, index: number) => (
                                 <div
                                     key={step.id || index}
                                     className={`${styles.step} ${styles[step.status]}`}
@@ -81,8 +81,8 @@ export default async function ClientPage({ params }: { params: { projectId: stri
                 <section className={styles.section}>
                     <h3>最新のアクティビティ</h3>
                     <div className={styles.timeline}>
-                        {project.logs.length === 0 && <p className={styles.logDate}>まだアクティビティはありません</p>}
-                        {project.logs.map((log: any) => (
+                        {(project as any).logs.length === 0 && <p className={styles.logDate}>まだアクティビティはありません</p>}
+                        {(project as any).logs.map((log: any) => (
                             <div key={log.id} className={styles.logItem}>
                                 <span className={styles.logDate}>{new Date(log.date).toLocaleDateString()}</span>
                                 <span className={styles.logTitle}>{log.title}</span>
