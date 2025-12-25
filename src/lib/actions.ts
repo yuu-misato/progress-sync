@@ -5,6 +5,8 @@
 import prisma from './prisma';
 import { notifyClient } from './notifier';
 import { revalidatePath } from 'next/cache';
+import { signIn } from '@/auth';
+import { AuthError } from 'next-auth';
 
 // Seed function for demo
 export async function seedDemoData() {
@@ -109,7 +111,6 @@ export async function submitTask(formData: FormData) {
     revalidatePath('/worker');
     revalidatePath(`/client/${projectId}`);
 }
-// ... (existing exports)
 
 export async function createProject(data: { name: string, clientName: string, deadline: string, budget: string }) {
     const project = await prisma.project.create({
@@ -150,4 +151,23 @@ export async function getPendingReviews() {
         comment: "作業完了しました。確認お願いします。", // Mock comment
         status: "pending" // Treat all as pending for admin view
     }));
+}
+
+export async function authenticate(
+    prevState: string | undefined,
+    formData: FormData,
+) {
+    try {
+        await signIn('credentials', Object.fromEntries(formData));
+    } catch (error) {
+        if (error instanceof AuthError) {
+            switch (error.type) {
+                case 'CredentialsSignin':
+                    return 'Invalid credentials.';
+                default:
+                    return 'Something went wrong.';
+            }
+        }
+        throw error;
+    }
 }

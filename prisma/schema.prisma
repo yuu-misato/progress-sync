@@ -63,3 +63,13 @@ model Task {
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
 }
+
+// 管理者ユーザー
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed password
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
