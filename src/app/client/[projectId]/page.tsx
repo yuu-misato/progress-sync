@@ -1,6 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import styles from "./client.module.css";
 // import { getProject } from "@/lib/actions"; // Server Actions cannot be called directly in static export if not careful
 
@@ -32,12 +29,8 @@ export async function generateStaticParams() {
 }
 
 export default function ClientPage() {
-    // In a real static export, we would fetch from an API endpoint here.
-    // For now, we use state initialized with mock/empty to ensure it builds.
-    const [project, setProject] = useState<any>(MOCK_PROJECT);
-
-    // If using dynamic routes in static export, we need generateStaticParams.
-    // For this prototype, we'll just render the view.
+    // For static export demo, we just use the mock data directly without hooks
+    const project = MOCK_PROJECT;
 
     const currentStep = project.steps.find((s: any) => s.status === 'active') || project.steps[project.steps.length - 1];
 
