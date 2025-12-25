@@ -1,0 +1,123 @@
+.zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface-alt);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zone:hover {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+    /* Very light blue */
+}
+
+.zone.active {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+    transform: scale(0.99);
+}
+
+.zone.hasFile {
+    border-style: solid;
+    border-color: var(--success);
+    background: #F0FDF4;
+    /* Light green */
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.label {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 32px;
+}
+
+.placeholder {
+    text-align: center;
+}
+
+.uploadIcon {
+    margin-bottom: 16px;
+    color: var(--text-sub);
+    transition: color 0.2s;
+}
+
+.zone:hover .uploadIcon {
+    color: var(--primary);
+}
+
+.text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    line-height: 1.5;
+}
+
+.subtext {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+
+.link {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* File Info Display */
+.fileInfo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--success);
+}
+
+.icon {
+    font-size: 2rem;
+}
+
+.details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.filename {
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+.size {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+
+.badge {
+    background: var(--success);
+    color: white;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+}
