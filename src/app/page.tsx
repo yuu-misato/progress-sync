@@ -45,6 +45,18 @@ export default function Home() {
               </p>
               <span className={styles.arrow}>ワークスペースへ &rarr;</span>
             </Link>
+
+            {/* Admin Card */}
+            <Link href="/admin" className={styles.card} style={{ borderColor: 'var(--text-main)' }}>
+              <div className={styles.cardIcon}>⚡️</div>
+              <h3>管理者・ディレクター</h3>
+              <p>
+                プロジェクトの作成、進捗の統括、
+                <br />
+                提出物のレビューはこちら。
+              </p>
+              <span className={styles.arrow}>管理コックピットへ &rarr;</span>
+            </Link>
           </div>
         </div>
       </div>
