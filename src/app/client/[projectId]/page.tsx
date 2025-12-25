@@ -26,6 +26,11 @@ const MOCK_PROJECT = {
     logs: []
 };
 
+// Required for static export: generate params for known paths
+export async function generateStaticParams() {
+    return [{ projectId: 'demo-project' }];
+}
+
 export default function ClientPage() {
     // In a real static export, we would fetch from an API endpoint here.
     // For now, we use state initialized with mock/empty to ensure it builds.
