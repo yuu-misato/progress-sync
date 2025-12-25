@@ -1,7 +1,9 @@
-import styles from "./client.module.css";
-import { getProject } from "@/lib/actions";
+"use client";
 
-// Define types locally or import from Prisma generated types if preferred
+import { useEffect, useState } from "react";
+import styles from "./client.module.css";
+// import { getProject } from "@/lib/actions"; // Server Actions cannot be called directly in static export if not careful
+
 type ProjectWithDetails = {
     id: string;
     name: string;
@@ -10,18 +12,29 @@ type ProjectWithDetails = {
     logs: { id: string; title: string; date: Date }[];
 };
 
-export default async function ClientPage({
-    params,
-}: {
-    params: { projectId: string };
-}) {
-    // Fetch real data from DB and cast to type (Prisma types prefered in real app)
-    const project = await getProject(params.projectId) as ProjectWithDetails | null;
+// Mock Data for Static Export Fallback
+const MOCK_PROJECT = {
+    name: "株式会社サンプル 新規Webサイト制作",
+    clientName: "株式会社サンプル 御中",
+    steps: [
+        { id: "1", label: "要件定義", order: 1, status: "completed", date: "2025/12/01" },
+        { id: "2", label: "デザイン", order: 2, status: "completed", date: "2025/12/10" },
+        { id: "3", label: "実装・構築", order: 3, status: "active", date: "現在進行中" },
+        { id: "4", label: "テスト・修正", order: 4, status: "pending", date: "12/28 予定" },
+        { id: "5", label: "納品", order: 5, status: "pending", date: "12/31 予定" },
+    ],
+    logs: []
+};
 
-    // Fallback if something fails (should handle 404 in real app)
-    if (!project) return <div>Project not found</div>;
+export default function ClientPage() {
+    // In a real static export, we would fetch from an API endpoint here.
+    // For now, we use state initialized with mock/empty to ensure it builds.
+    const [project, setProject] = useState<any>(MOCK_PROJECT);
 
-    const currentStep = project.steps.find(s => s.status === 'active') || project.steps[project.steps.length - 1];
+    // If using dynamic routes in static export, we need generateStaticParams.
+    // For this prototype, we'll just render the view.
+
+    const currentStep = project.steps.find((s: any) => s.status === 'active') || project.steps[project.steps.length - 1];
 
     return (
         <div className={styles.page}>
@@ -43,9 +56,9 @@ export default async function ClientPage({
                         </div>
 
                         <div className={styles.tracker}>
-                            {project.steps.map((step, index) => (
+                            {project.steps.map((step: any, index: number) => (
                                 <div
-                                    key={step.id}
+                                    key={step.id || index}
                                     className={`${styles.step} ${styles[step.status]}`}
                                 >
                                     <div className={styles.stepBubble}>
@@ -80,9 +93,9 @@ export default async function ClientPage({
                     <h3>最新のアクティビティ</h3>
                     <div className={styles.timeline}>
                         {project.logs.length === 0 && <p className={styles.logDate}>まだアクティビティはありません</p>}
-                        {project.logs.map((log) => (
+                        {project.logs.map((log: any) => (
                             <div key={log.id} className={styles.logItem}>
-                                <span className={styles.logDate}>{log.date.toLocaleDateString()}</span>
+                                <span className={styles.logDate}>{new Date(log.date).toLocaleDateString()}</span>
                                 <span className={styles.logTitle}>{log.title}</span>
                             </div>
                         ))}

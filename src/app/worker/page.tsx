@@ -1,13 +1,34 @@
-import styles from "./worker.module.css";
-import { getWorkerTasks, submitTask } from "@/lib/actions";
+"use client";
 
-export default async function WorkerDashboard() {
-    const tasks = await getWorkerTasks();
+import { useState } from "react";
+import styles from "./worker.module.css";
+// import { getWorkerTasks, submitTask } from "@/lib/actions";
+
+// Mock Data for Static Export
+const MOCK_TASKS = [
+    {
+        id: "1", projectId: "p1", title: "トップページの実装 (コーディング)", deadline: new Date("2025-12-25"), isUrgent: true, isDone: false,
+        project: { name: "株式会社サンプル Web制作" }
+    },
+    {
+        id: "2", projectId: "p1", title: "下層ページ (About/Service) の実装", deadline: new Date("2025-12-27"), isUrgent: false, isDone: false,
+        project: { name: "株式会社サンプル Web制作" }
+    },
+];
+
+export default function WorkerDashboard() {
+    const [tasks, setTasks] = useState<any[]>(MOCK_TASKS);
 
     // Basic stats
     const unfinished = tasks.filter(t => !t.isDone).length;
     const urgent = tasks.filter(t => !t.isDone && t.isUrgent).length;
-    const completed = tasks.filter(t => t.isDone).length; // Real count if tasks include done ones
+    const completed = tasks.filter(t => t.isDone).length;
+
+    const handleSubmit = (taskId: string) => {
+        // Client-side optimistic update for demo
+        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, isDone: true } : t));
+        alert("提出完了しました（デモモード）");
+    };
 
     return (
         <div className={styles.page}>
@@ -69,23 +90,20 @@ export default async function WorkerDashboard() {
                                             <circle cx="12" cy="12" r="10" />
                                             <polyline points="12 6 12 12 16 14" />
                                         </svg>
-                                        期限: {task.deadline.toLocaleDateString()}
+                                        期限: {new Date(task.deadline).toLocaleDateString()}
                                     </span>
                                 </div>
                             </div>
                             <div className={styles.actions}>
-                                <form action={submitTask}>
-                                    <input type="hidden" name="taskId" value={task.id} />
-                                    <input type="hidden" name="projectId" value={task.projectId} />
-                                    <input type="hidden" name="taskTitle" value={task.title} />
-                                    <button type="submit" className={styles.submitBtn}>
-                                        提出する
-                                    </button>
-                                </form>
+                                <button
+                                    className={styles.submitBtn}
+                                    onClick={() => handleSubmit(task.id)}
+                                >
+                                    提出する
+                                </button>
                             </div>
                         </div>
                     ))}
-                    {/* Done tasks could be listed below if needed */}
                 </div>
             </main>
         </div>

@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // output: "standalone", // Disable standalone for Amplify default hosting
+  output: "export",
 };
 
 export default nextConfig;
