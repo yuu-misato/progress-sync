@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  // AWS App Runner/Lambda deployment optimization
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// プロジェクト（案件）
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  clientName  String
+  status      String   @default("active") // active, completed
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // LINE連携用ID (本来はUserモデルと紐づけますがシンプルに実装)
+  lineUserId  String?
+
+  steps     ProjectStep[]
+  logs      ActivityLog[]
+  tasks     Task[]
+}
+
+// 進捗ステップ (要件定義 -> デザイン -> 実装...)
+model ProjectStep {
+  id        String   @id @default(cuid())
+  label     String
+  order     Int
+  status    String   // completed, active, pending
+  date      String?  // 表示用日付文字列
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+}
+
+// アクティビティログ
+model ActivityLog {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime @default(now())
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+}
+
+// 作業者タスク
+model Task {
+  id        String   @id @default(cuid())
+  title     String
+  deadline  DateTime
+  isUrgent  Boolean  @default(false)
+  isDone    Boolean  @default(false)
+  
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
+}
