@@ -1,34 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./admin.module.css";
-
-// Mock Data: Submissions to review
-const MOCK_SUBMISSIONS = [
-    {
-        id: "sub-1",
-        workerName: "田中 健太",
-        taskTitle: "トップページの実装 (コーディング)",
-        projectTitle: "株式会社サンプル Web制作",
-        submittedAt: "2025-12-25 10:30",
-        comment: "初稿が完了しました。SP表示の際に一部メニューが崩れる可能性がありますが、PC版はFIXです。ご確認お願いします。",
-        status: "pending" // pending, approved, rejected
-    },
-    {
-        id: "sub-2",
-        workerName: "鈴木 美咲",
-        taskTitle: "ロゴデザイン A案・B案",
-        projectTitle: "新規ブランド立ち上げ",
-        submittedAt: "2025-12-24 18:00",
-        comment: "A案はシンプルさを、B案は親しみやすさを重視しました。",
-        status: "pending"
-    }
-];
+import { createProject, getPendingReviews } from "@/lib/actions";
 
 export default function AdminDashboard() {
-    const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
-    const [selectedId, setSelectedId] = useState<string | null>(MOCK_SUBMISSIONS[0].id);
+    const [submissions, setSubmissions] = useState<any[]>([]);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
     const [feedback, setFeedback] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
 
     // Project Creation State
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,6 +18,21 @@ export default function AdminDashboard() {
         deadline: "",
         budget: ""
     });
+
+    useEffect(() => {
+        async function loadData() {
+            try {
+                const data = await getPendingReviews();
+                setSubmissions(data);
+                if (data.length > 0) setSelectedId(data[0].id);
+            } catch (error) {
+                console.error("Failed to load submissions", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        loadData();
+    }, []);
 
     const selectedSubmission = submissions.find(s => s.id === selectedId);
     const pendingCount = submissions.filter(s => s.status === "pending").length;
@@ -59,17 +54,31 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleCreateProject = (e: React.FormEvent) => {
+    const handleCreateProject = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here we would call Server Action to save to DB
-        setIsModalOpen(false);
-        const inviteLinkClient = `https://progress-sync.app/client/${Math.random().toString(36).substr(2, 9)}`;
-        const inviteLinkWorker = `https://progress-sync.app/worker/invite/${Math.random().toString(36).substr(2, 9)}`;
 
-        alert(`プロジェクト「${newProject.name}」を作成しました。\n\n【顧客用招待リンク】\n${inviteLinkClient}\n\n【クリエイター用招待リンク】\n${inviteLinkWorker}\n\n(※リンクはクリップボードにコピーされたつもりで)`);
+        try {
+            const project = await createProject({
+                name: newProject.name,
+                clientName: newProject.client,
+                deadline: newProject.deadline,
+                budget: newProject.budget
+            });
 
-        // Reset form
-        setNewProject({ name: "", client: "", deadline: "", budget: "" });
+            setIsModalOpen(false);
+
+            // Use real IDs from the DB
+            const inviteLinkClient = `https://progress-sync.app/client/${project.id}`;
+            const inviteLinkWorker = `https://progress-sync.app/worker?project_id=${project.id}`; // Simplified invite logic
+
+            alert(`プロジェクト「${project.name}」をDBに作成しました。\n\n【顧客用招待リンク】\n${inviteLinkClient}\n\n【クリエイター用招待リンク】\n${inviteLinkWorker}\n\n(※実データ連携完了)`);
+
+            // Reset form
+            setNewProject({ name: "", client: "", deadline: "", budget: "" });
+        } catch (error) {
+            alert("プロジェクト作成に失敗しました");
+            console.error(error);
+        }
     };
 
     return (
@@ -161,20 +170,25 @@ export default function AdminDashboard() {
                 {/* Sidebar: List of Creators/Submissions */}
                 <aside className={styles.sidebar}>
                     <div className={styles.sidebarHeader}>レビュー待ち一覧</div>
-                    {submissions.map(sub => (
-                        <div
-                            key={sub.id}
-                            className={`${styles.creatorItem} ${selectedId === sub.id ? styles.active : ''}`}
-                            onClick={() => setSelectedId(sub.id)}
-                            style={{ opacity: sub.status !== 'pending' ? 0.5 : 1 }}
-                        >
-                            <span className={styles.creatorName}>{sub.workerName}</span>
-                            <div className={styles.creatorMeta}>{sub.taskTitle}</div>
-                            <div className={styles.creatorMeta} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
-                                {sub.status === 'approved' ? '✅ 承認済み' : sub.status === 'rejected' ? '⚠️ 修正依頼中' : 'PC・SP確認待ち'}
+                    {isLoading ? (
+                        <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>読み込み中...</div>
+                    ) : submissions.length === 0 ? (
+                        <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>レビュー待ちはありません</div>
+                    ) : (
+                        submissions.map(sub => (
+                            <div
+                                key={sub.id}
+                                className={`${styles.creatorItem} ${selectedId === sub.id ? styles.active : ''}`}
+                                onClick={() => setSelectedId(sub.id)}
+                            >
+                                <span className={styles.creatorName}>{sub.workerName}</span>
+                                <div className={styles.creatorMeta}>{sub.taskTitle}</div>
+                                <div className={styles.creatorMeta} style={{ marginTop: '4px', fontSize: '0.75rem' }}>
+                                    {sub.status === 'approved' ? '✅ 承認済み' : sub.status === 'rejected' ? '⚠️ 修正依頼中' : 'PC・SP確認待ち'}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </aside>
 
                 {/* Main Review Area */}
@@ -237,7 +251,7 @@ export default function AdminDashboard() {
                         </div>
                     ) : (
                         <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                            左のメニューからレビューする項目を選択してください
+                            {isLoading ? "データを取得しています..." : "左のメニューからレビューする項目を選択してください"}
                         </div>
                     )}
                 </section>

@@ -110,3 +110,45 @@ export async function submitTask(formData: FormData) {
     revalidatePath('/worker');
     revalidatePath(`/client/${projectId}`);
 }
+// ... (existing exports)
+
+export async function createProject(data: { name: string, clientName: string, deadline: string, budget: string }) {
+    const project = await prisma.project.create({
+        data: {
+            name: data.name,
+            clientName: data.clientName,
+            status: "active",
+            steps: {
+                create: [
+                    { label: "要件定義", order: 1, status: "pending", date: "未定" },
+                    { label: "デザイン", order: 2, status: "pending", date: "未定" },
+                    { label: "実装・構築", order: 3, status: "pending", date: "未定" },
+                    { label: "テスト・修正", order: 4, status: "pending", date: "未定" },
+                    { label: "納品", order: 5, status: "pending", date: data.deadline },
+                ]
+            }
+        }
+    });
+    return project;
+}
+
+export async function getPendingReviews() {
+    // For this prototype, we treat recently completed tasks as "pending review"
+    // Ideally we would add a 'reviewStatus' field to the Task model.
+    // Here we fetch tasks that are done but maybe we can filter or just show all done tasks as a list.
+    const tasks = await prisma.task.findMany({
+        where: { isDone: true },
+        include: { project: true },
+        orderBy: { deadline: 'desc' } // Just getting recent ones
+    });
+
+    return tasks.map(t => ({
+        id: t.id,
+        workerName: "担当者 (仮)", // Worker name not in Task model yet
+        taskTitle: t.title,
+        projectTitle: t.project.name,
+        submittedAt: "2025-12-25", // Mock date for now or add updatedAt
+        comment: "作業完了しました。確認お願いします。", // Mock comment
+        status: "pending" // Treat all as pending for admin view
+    }));
+}

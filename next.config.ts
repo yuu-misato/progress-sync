@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
+  // output: "export", // Disabled to enable SSR/DB connection
 };
 
 export default nextConfig;
