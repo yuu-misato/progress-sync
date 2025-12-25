@@ -1,40 +1,26 @@
+import { getProject } from "@/lib/actions";
 import styles from "./client.module.css";
-// import { getProject } from "@/lib/actions"; // Server Actions cannot be called directly in static export if not careful
-
-type ProjectWithDetails = {
-    id: string;
-    name: string;
-    clientName: string;
-    steps: { id: string; label: string; status: string; date: string | null }[];
-    logs: { id: string; title: string; date: Date }[];
-};
-
-// Mock Data for Static Export Fallback
-const MOCK_PROJECT = {
-    name: "株式会社サンプル 新規Webサイト制作",
-    clientName: "株式会社サンプル 御中",
-    steps: [
-        { id: "1", label: "要件定義", order: 1, status: "completed", date: "2025/12/01" },
-        { id: "2", label: "デザイン", order: 2, status: "completed", date: "2025/12/10" },
-        { id: "3", label: "実装・構築", order: 3, status: "active", date: "現在進行中" },
-        { id: "4", label: "テスト・修正", order: 4, status: "pending", date: "12/28 予定" },
-        { id: "5", label: "納品", order: 5, status: "pending", date: "12/31 予定" },
-    ],
-    logs: []
-};
-
-// Required for static export: generate params for known paths
-export async function generateStaticParams() {
-    return [{ projectId: 'demo-project' }];
-}
-
 import InvoiceButton from "./InvoiceButton";
 
-export default function ClientPage() {
-    // For static export demo, we just use the mock data directly without hooks
-    const project = MOCK_PROJECT;
+export default async function ClientPage({ params }: { params: { projectId: string } }) {
+    // Fetch real project data from DB
+    // params is a promise in latest Next.js but usually resolved in props for now. 
+    // Wait, in Next.js 15 params is async, in 14 it's not. Assuming 14/15 compat.
+    // Safe to access params.projectId if not using experimental.
 
-    const currentStep = project.steps.find((s: any) => s.status === 'active') || project.steps[project.steps.length - 1];
+    // Note: getProject handles "demo-project" or default ID if needed, 
+    // but for real ID it fetches from DB.
+    const project = await getProject(params.projectId);
+
+    if (!project) {
+        return <div className="container">Project not found</div>;
+    }
+
+    // Determine current step (active or last completed)
+    // We need to type cast or ensure getProject returns steps with status.
+    // The prisma include returns steps.
+    const steps = project.steps || [];
+    const currentStep = steps.find((s: any) => s.status === 'active') || steps[steps.length - 1];
 
     return (
         <div className={styles.page}>
