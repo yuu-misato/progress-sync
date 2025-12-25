@@ -1,0 +1,239 @@
+.page {
+    background: var(--background);
+    min-height: 100vh;
+    padding-bottom: 40px;
+}
+
+.header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    margin-bottom: 32px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.projectName {
+    font-size: 1.5rem;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.clientName {
+    font-size: 0.875rem;
+    color: var(--text-sub);
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.statusCard {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+}
+
+.statusHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+}
+
+.statusBadge {
+    background: var(--accent);
+    /* Blue for active status */
+    color: white;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tracker Styles */
+.tracker {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    counter-reset: step;
+}
+
+.step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.stepBubble {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 3px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--text-sub);
+    margin-bottom: 16px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2;
+    font-size: 1.1rem;
+}
+
+/* Line connecting steps */
+.step::after {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    z-index: 0;
+    transform: translateY(-50%);
+}
+
+.step:last-child::after {
+    display: none;
+}
+
+.stepLabel {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.stepDate {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    font-weight: 500;
+}
+
+/* Completed State */
+.step.completed .stepBubble {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+/* The line needs to be handled carefully. CSS sibling selectors can color previous lines.
+   But simpler is to just color them if we assume React renders order. 
+   Actually, the line usually belongs to the previous step extending to current?
+   Here: .step::after extends to the RIGHT. So completed steps should correspond to completed lines.
+*/
+.step.completed::after {
+    background: var(--success);
+}
+
+/* Active State */
+.step.active .stepBubble {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+    /* Ring effect */
+    transform: scale(1.1);
+}
+
+.step.active .stepLabel {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* Pending State */
+.step.pending .stepBubble {
+    opacity: 0.7;
+}
+
+/* Timeline */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.logItem {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.logItem:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+}
+
+.logDate {
+    color: var(--text-sub);
+    font-size: 0.875rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.logTitle {
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+    .tracker {
+        flex-direction: column;
+        gap: 0;
+        align-items: flex-start;
+        padding-left: 10px;
+    }
+
+    .step {
+        flex-direction: row;
+        gap: 20px;
+        width: 100%;
+        padding-bottom: 40px;
+        align-items: flex-start;
+    }
+
+    /* Vertical Line */
+    .step::after {
+        width: 4px;
+        height: 100%;
+        top: 48px;
+        /* Start below the bubble */
+        left: 24px;
+        /* Center of bubble (48/2) */
+        transform: translateX(-50%);
+    }
+
+    .step:last-child {
+        padding-bottom: 0;
+    }
+
+    .stepInfo {
+        padding-top: 10px;
+        text-align: left;
+    }
+
+    .stepLabel {
+        text-align: left;
+    }
+}
