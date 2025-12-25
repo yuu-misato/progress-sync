@@ -12,6 +12,10 @@ frontend:
     baseDirectory: .next
     files:
       - '**/*'
+    secondaryArtifacts:
+      - baseDirectory: .next
+        files:
+          - '**/*'
   cache:
     paths:
       - node_modules/**/*
