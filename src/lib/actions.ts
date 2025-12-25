@@ -1,11 +1,10 @@
 // src/lib/actions.ts
 'use server';
 
-import { PrismaClient } from '@prisma/client';
+// sent the updated code to update actions.ts to use the single prisma instance
+import prisma from './prisma';
 import { notifyClient } from './notifier';
 import { revalidatePath } from 'next/cache';
-
-const prisma = new PrismaClient();
 
 // Seed function for demo
 export async function seedDemoData() {
