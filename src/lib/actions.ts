@@ -78,3 +78,35 @@ export async function updateStepStatus(stepId: string, status: string, projectId
 
     revalidatePath(`/client/${projectId}`);
 }
+
+export async function submitTask(formData: FormData) {
+    const taskId = formData.get('taskId') as string;
+    const projectId = formData.get('projectId') as string;
+    const taskTitle = formData.get('taskTitle') as string;
+
+    if (!taskId || !projectId) return;
+
+    // 1. Mark task as done
+    await prisma.task.update({
+        where: { id: taskId },
+        data: { isDone: true }
+    });
+
+    // 2. Add Activity Log
+    await prisma.activityLog.create({
+        data: {
+            projectId,
+            title: `タスク「${taskTitle}」が提出・完了しました`,
+        }
+    });
+
+    // 3. Notify Client
+    try {
+        await notifyClient(projectId, `タスク「${taskTitle}」の提出が完了しました。ご確認をお願いします。`);
+    } catch (e) {
+        console.error("Failed to notify", e);
+    }
+
+    revalidatePath('/worker');
+    revalidatePath(`/client/${projectId}`);
+}

@@ -1,5 +1,5 @@
 import styles from "./worker.module.css";
-import { getWorkerTasks } from "@/lib/actions";
+import { getWorkerTasks, submitTask } from "@/lib/actions";
 
 export default async function WorkerDashboard() {
     const tasks = await getWorkerTasks();
@@ -7,7 +7,7 @@ export default async function WorkerDashboard() {
     // Basic stats
     const unfinished = tasks.filter(t => !t.isDone).length;
     const urgent = tasks.filter(t => !t.isDone && t.isUrgent).length;
-    const completed = 12; // Placeholder
+    const completed = tasks.filter(t => t.isDone).length; // Real count if tasks include done ones
 
     return (
         <div className={styles.page}>
@@ -46,7 +46,7 @@ export default async function WorkerDashboard() {
                 <h2 className={styles.sectionTitle}>あなたのタスク</h2>
 
                 <div className={styles.taskList}>
-                    {tasks.map((task) => (
+                    {tasks.filter(t => !t.isDone).map((task) => (
                         <div key={task.id} className={styles.taskItem}>
                             <div className={styles.taskInfo}>
                                 <span className={styles.projectBadge}>{task.project?.name || '案件'}</span>
@@ -74,12 +74,18 @@ export default async function WorkerDashboard() {
                                 </div>
                             </div>
                             <div className={styles.actions}>
-                                <form>
-                                    <button className={styles.submitBtn}>提出する</button>
+                                <form action={submitTask}>
+                                    <input type="hidden" name="taskId" value={task.id} />
+                                    <input type="hidden" name="projectId" value={task.projectId} />
+                                    <input type="hidden" name="taskTitle" value={task.title} />
+                                    <button type="submit" className={styles.submitBtn}>
+                                        提出する
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     ))}
+                    {/* Done tasks could be listed below if needed */}
                 </div>
             </main>
         </div>
