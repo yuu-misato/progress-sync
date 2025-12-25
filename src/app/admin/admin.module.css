@@ -347,20 +347,70 @@
     border: none;
 }
 
+/* Modal & Form Fixes */
 .modalHeader {
     padding: 24px 32px;
     border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    color: #9CA3AF;
+    cursor: pointer;
+    padding: 0 8px;
+    transition: color 0.2s;
+}
+
+.closeBtn:hover {
+    color: #4B5563;
 }
 
 .modalBody {
     padding: 32px;
 }
 
+.formGroup {
+    margin-bottom: 24px;
+}
+
+.formLabel {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
 .inputSelect {
-    border: 1px solid #D1D5DB;
+    width: 100%;
+    /* Ensure full width */
     padding: 12px 14px;
+    border: 1px solid #D1D5DB;
     border-radius: 6px;
     font-size: 1rem;
+    color: #1F2937;
+    background: #fff;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    /* Crucial for padding */
 }
 
 .inputSelect:focus {
@@ -369,22 +419,15 @@
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-.createBtn {
-    background: #111827;
-    /* Near Black */
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    /* Squarer buttons for business feel */
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.createBtn:hover {
-    background: #000000;
+.modalFooter {
+    padding: 20px 32px;
+    background: #F9FAFB;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
 }
 
 .headerActions {
