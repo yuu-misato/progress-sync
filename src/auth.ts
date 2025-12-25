@@ -16,7 +16,10 @@ async function getUser(email: string) {
     }
 }
 
-export const { auth, signIn, signOut } = NextAuth({
+// Demo fallback
+process.env.AUTH_SECRET = process.env.AUTH_SECRET || "secure-random-secret-key-change-me";
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [
         Credentials({
