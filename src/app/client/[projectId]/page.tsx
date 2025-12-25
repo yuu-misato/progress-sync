@@ -28,6 +28,8 @@ export async function generateStaticParams() {
     return [{ projectId: 'demo-project' }];
 }
 
+import InvoiceButton from "./InvoiceButton";
+
 export default function ClientPage() {
     // For static export demo, we just use the mock data directly without hooks
     const project = MOCK_PROJECT;
@@ -37,9 +39,12 @@ export default function ClientPage() {
     return (
         <div className={styles.page}>
             <header className={styles.header}>
-                <div className="container">
-                    <h1 className={styles.projectName}>{project.name}</h1>
-                    <p className={styles.clientName}>{project.clientName}</p>
+                <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <h1 className={styles.projectName}>{project.name}</h1>
+                        <p className={styles.clientName}>{project.clientName}</p>
+                    </div>
+                    <InvoiceButton project={project} />
                 </div>
             </header>
 
