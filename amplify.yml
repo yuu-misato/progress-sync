@@ -4,8 +4,6 @@ frontend:
     preBuild:
       commands:
         - npm ci
-        - echo "DATABASE_URL is ${DATABASE_URL:+'set'}"
-        - echo "DATABASE_URL=$DATABASE_URL" >> .env
         - npx prisma generate
         - npx prisma db push --accept-data-loss
         - npx tsx scripts/add-admin.ts
@@ -19,6 +17,7 @@ frontend:
     secondaryArtifacts:
       - baseDirectory: .
         files:
+          - 'dev.db'
           - 'prisma/**/*'
           - 'node_modules/**/*'
   cache:
