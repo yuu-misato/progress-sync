@@ -1,5 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+    // @ts-ignore
+    datasources: {
+        db: {
+            url: 'file:./dev.db',
+        },
+    },
+});
 
 async function main() {
     const email = 'yusaku.suzuki@sou-zou-do.com';
