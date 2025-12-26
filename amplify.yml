@@ -4,6 +4,7 @@ frontend:
     preBuild:
       commands:
         - npm ci
+        - echo "DATABASE_URL=$DATABASE_URL" >> .env
         - npx prisma generate
         - npx prisma db push --accept-data-loss
         - npx tsx scripts/add-admin.ts
